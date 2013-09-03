@@ -1,0 +1,30 @@
+---
+- name: Install common needs/packages/daemons
+  hosts: servers
+  user: $login_user
+  sudo: yes
+  tags: base
+  roles:
+    - common
+    - apt
+    - nginx
+
+- name: Configure postgres
+  hosts: servers
+  user: $login_user
+  sudo: yes
+  sudo_user: postgres
+  tags: postgres
+  roles:
+    - postgres
+
+- name: Install rbenv environment and needs as Discourse user
+  hosts: servers
+  user: $login_user
+  sudo: yes
+  sudo_user: ${discourse.user}
+  tags: discourse
+  roles:
+    - rbenv
+    - discourse
+    - bluepill

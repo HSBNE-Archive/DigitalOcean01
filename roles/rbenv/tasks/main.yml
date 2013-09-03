@@ -1,0 +1,39 @@
+---
+
+- name: Templated ~/.gemrc
+  template: src=gemrc.j2 dest=/home/${discourse.user}/.gemrc
+
+- name: git clone rbenv
+  git: repo=https://github.com/sstephenson/rbenv dest=/home/${discourse.user}/$rbenv_root
+
+- name: git clone ruby-build
+  git: repo=https://github.com/sstephenson/ruby-build dest=/home/${discourse.user}/$rbenv_root/plugins/ruby-build
+
+- name: git clone rbenv-gemset
+  git: repo=https://github.com/jf/rbenv-gemset dest=/home/${discourse.user}/$rbenv_root/plugins/rbenv-gemset
+
+- name: update PATH in ~/.profile
+  lineinfile: dest=/home/${discourse.user}/.profile line='export PATH="$HOME/$rbenv_root/bin:$PATH"' regexp=PATH.*rbenv
+
+- name: add rbenv-int to profile
+  lineinfile: dest=/home/${discourse.user}/.profile line='eval "$(rbenv init -)"' regexp=eval.*rbenv
+
+- name: install default Ruby versions (long wait / compiling two Ruby versions)
+  command: /home/${discourse.user}/$rbenv_root/bin/rbenv install {{ item }} creates=/home/${discourse.user}/$rbenv_root/versions/{{ item }}
+  with_items:
+    - ${ruby.versions}
+
+- name: set preferred version
+  template: src=version.j2 dest=/home/${discourse.user}/$rbenv_root/version
+
+- name: rbenv rehash (needs to be a handler)
+  command: /home/${discourse.user}/$rbenv_root/bin/rbenv rehash
+
+- name: Update gem for great justice (needs idempotency)
+  command: /home/${discourse.user}/$rbenv_root/shims/gem update system
+
+- name: install bundler (needs idempotency)
+  command: /home/${discourse.user}/$rbenv_root/shims/gem install bundler
+
+- name: rbenv rehash (needs to be a handler)
+  command: /home/${discourse.user}/$rbenv_root/bin/rbenv rehash

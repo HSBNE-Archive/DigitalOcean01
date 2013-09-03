@@ -1,0 +1,21 @@
+---
+
+- name: git clone discourse
+  git: repo=git://github.com/discourse/discourse.git dest={{ discourse.path }} version='master'
+
+- name: install gems for discourse (bundler for idempotency - first run is only long process)
+  command: /home/{{ discourse.user }}/{{ rbenv_root }}/shims/bundle install --deployment --without test chdir={{ discourse.path }}
+
+- name: install templates
+  template: src={{ item.src }} dest={{ discourse.path }}/{{ item.dest }}
+  with_items:
+    - { src: 'database.yml.j2', dest: 'config/database.yml' }
+    - { src: 'redis.yml.j2', dest: 'config/redis.yml' }
+    - { src: 'discourse.pill.j2', dest: 'config/discourse.pill' }
+    - { src: 'production.rb.j2', dest: 'config/environments/production.rb' }
+
+- name: initialize database from project dir (relies on rake for idempotency)
+  shell: RUBY_GC_MALLOC_LIMIT=90000000 RAILS_ENV=production /home/{{ discourse.user }}/{{ rbenv_root }}/shims/bundle exec rake db:migrate chdir={{ discourse.path }}
+
+- name: precompile assets (expensive - no idempotency - will precompile assets every time)
+  shell: RUBY_GC_MALLOC_LIMIT=90000000 RAILS_ENV=production /home/{{ discourse.user }}/{{ rbenv_root }}/shims/bundle exec rake assets:precompile chdir={{ discourse.path }}

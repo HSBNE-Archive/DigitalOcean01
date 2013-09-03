@@ -1,0 +1,115 @@
+
+# The name you use to ssh to the host
+login_user: vagrant
+
+# It is highly recommended to change these to prevent information disclosure / guessable names
+#
+# version can be 'master' for bleeding edge, or 'latest-release' for most recent numbered release
+
+discourse:
+  user: discourse
+  path: /var/www/discourse
+  version: master
+  prod:
+    db: discourse_prod
+    dbpasswd: mysupersecreetpassword
+    id: 0
+    hostname: www.example.com
+  test:
+    db: discourse_test
+    dbpasswd: mysupersecreetpassword
+    id: 0
+    hostname: localhost
+
+######################### END OF "STUFF YOU SHOULD CHANGE" SECTION #######################
+
+ruby:
+  versions: 
+     - 1.9.3-p448
+     - 2.0.0-p247
+  global: 2.0.0-p247
+
+rbenv_root: '.rbenv'
+
+apt:
+  base:
+    # all from https://github.com/discourse/discourse/blob/master/docs/INSTALL-ubuntu.md
+    # openssh-server task
+    - openssh-server
+    - ssh-import-id
+    - libwrap0
+    - tcpd
+    - openssh-server
+    # postgresql-server task
+    - postgresql
+    - postgresql-contrib-9.1
+    - postgresql-client-common
+    - libxslt1.1
+    - postgresql-doc
+    - libossp-uuid16
+    - postgresql-contrib
+    - postgresql-common
+    - postgresql-client
+    - postgresql-9.1
+    - postgresql-doc-9.1
+    - ssl-cert
+    - libpq5
+    - postgresql-client-9.1
+    # specifically for ansible
+    - python-psycopg2
+    # mail-server task
+    - dovecot-imapd
+    - procmail
+    - dovecot-core
+    - postfix
+    - libpth20
+    - libtokyocabinet8
+    - libgpgme11
+    - mutt
+    - ssl-cert
+    - dovecot-pop3d
+    - bsd-mailx
+    # additional system packages
+    - build-essential
+    - libssl-dev
+    - libyaml-dev
+    - git
+    - libtool
+    # TODO: open bug, listed as libxslt-dev in docs
+    - libxslt1-dev 
+    - libxml2-dev 
+    - libpq-dev 
+    - gawk 
+    - curl 
+    - pngcrush 
+    - imagemagick 
+    # TODO: own install for >= 12.10 software-properties-common
+    - python-software-properties
+    # Redis
+    - redis-server
+    # nginx
+    - nginx
+    # rbenv + Rails
+    - libc6-dev
+    - libssl-dev
+    - libmysql++-dev
+    - libsqlite3-dev
+    - make 
+    - build-essential 
+    - libssl-dev
+    - libreadline6-dev 
+    - zlib1g-dev 
+    - libyaml-dev
+    # for Nokogiri / just about everything these days, you bastards
+    - libxml2-dev
+    - libxslt1-dev
+    # install horribly outdated + broken in-distro versions, just because
+    - ruby
+    - rake
+    # install node-js for Rails
+    - nodejs
+    # for Vagrant (should be broken out)
+    - curl
+    - libcurl4-openssl-dev
+    - bsdtar
+    - nfs-common

@@ -1,0 +1,16 @@
+---
+
+- name: install bluepill gem (gem for idempotency?)
+  command: /home/{{ discourse.user }}/{{ rbenv_root }}/shims/gem install bluepill
+  tags: bluepill
+
+- name: add bluepill alias to discourse user
+  lineinfile: dest=/home/{{ discourse.user }}/.bash_aliases create=yes regexp="^alias bluepill" line='alias bluepill="NOEXEC_DISABLE=1 bluepill --no-privileged -c ~/.bluepill"'
+  tags: bluepill
+
+- name: copy shims in to satisfy legacy RVM weirdness
+  template: src={{ item.src }} dest=/home/{{ discourse.user }}/{{ rbenv_root }}/shims/{{ item.dest }} mode=0755
+  with_items:
+    - { src: 'bootup_bundle.j2', dest: 'bootup_bundle' }
+    - { src: 'bootup_bluepill.j2', dest: 'bootup_bluepill' }
+  tags: bluepill
