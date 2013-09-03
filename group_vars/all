@@ -21,6 +21,16 @@ discourse:
     id: 0
     hostname: localhost
 
+# mandrillapp.com is a dev recommendation (12k emails/month for free)
+# use API key for password (if necessary)
+
+smtp:
+  fqdn: mandrillapp.com
+  port: 587
+  user: username@domain.com
+  passwd: api_key_or_password
+
+
 ######################### END OF "STUFF YOU SHOULD CHANGE" SECTION #######################
 
 ruby:
