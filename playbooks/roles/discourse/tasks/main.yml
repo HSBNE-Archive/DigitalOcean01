@@ -5,7 +5,7 @@
   register: git_cloned
 
 - name: install gems for discourse (bundler for idempotency - first run is only long process)
-  shell: /home/${discourse.user}/.rbenv/shims/bundle install --deployment --without test chdir={{ discourse.path }}
+  command: /home/${discourse.user}/.rvm/gems/{$ruby.global}/bin/bundle install --deployment --without test chdir={{ discourse.path }}
 
 - name: install templates
   template: src={{ item.src }} dest={{ discourse.path }}/{{ item.dest }}
@@ -15,8 +15,11 @@
     - { src: 'discourse.pill.j2', dest: 'config/discourse.pill' }
     - { src: 'production.rb.j2', dest: 'config/environments/production.rb' }
 
+- name: create secret token if nonexistent (add file conditional execution)
+  command: RAILS_ENV=production /home/${discourse.user}/.rvm/gems/{$ruby.global}/bin/bundle exec rake secret chdir={{ discourse.path }} creates={{ discourse.path }}/.secret_token
+
 - name: initialize database from project dir (relies on rake for idempotency)
-  shell: RUBY_GC_MALLOC_LIMIT={{ ruby.gc_malloc_limit }} RAILS_ENV=production /home/{{ discourse.user }}/.rbenv/shims/bundle exec rake db:migrate chdir={{ discourse.path }}
+  command: RUBY_GC_MALLOC_LIMIT={{ ruby.gc_malloc_limit }} RAILS_ENV=production /home/${discourse.user}/.rvm/gems/{$ruby.global}/bin/bundle exec rake db:migrate chdir={{ discourse.path }}
 
 - name: precompile assets
-  shell: RUBY_GC_MALLOC_LIMIT={{ ruby.gc_malloc_limit }} RAILS_ENV=production /home/{{ discourse.user }}/.rbenv/shims/bundle exec rake assets:precompile chdir={{ discourse.path }}
+  command: RUBY_GC_MALLOC_LIMIT={{ ruby.gc_malloc_limit }} RAILS_ENV=production /home/${discourse.user}/.rvm/gems/{$ruby.global}/bin/bundle exec rake assets:precompile chdir={{ discourse.path }}

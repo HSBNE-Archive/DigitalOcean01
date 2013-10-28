@@ -1,15 +1,15 @@
 ---
 
 - name: install RVM
-  shell: \curl -L https://get.rvm.io | bash -s stable creates=~/.rvm
+  shell: \curl -L https://get.rvm.io | bash -s stable --auto-dotfiles creates=~/.rvm
 
 - name: install Ruby 2.0 without package installs that might require sudo
   command: /home/${discourse.user}/.rvm/bin/rvm install --autolibs=2 --default ${ruby.global} creates=/home/${discourse.user}/.rvm/rubies/ruby-${ruby.global}
 
-- name: install rubygems
-  command: /home/${discourse.user}/.rvm/bin/rvm rubygems 2.1.0 creates=/home/${discourse.user}/.rvm/src/rubygems-2.1.10/
+#- name: install rubygems
+#  command: /home/${discourse.user}/.rvm/bin/rvm rubygems 2.1.10 creates=/home/${discourse.user}/.rvm/src/rubygems-2.1.10/
 
 - name: install bundler
-  command: /home/${discourse.user}/.rvm/bin/gem install bundler #creates=/home/${discourse.user}/.rvm/gems/ruby-${ruby.global}/bin/bundle
+  command: /home/${discourse.user}/.rvm/bin/gem install bundler creates=/home/${discourse.user}/.rvm/gems/ruby-${ruby.global}/bin/bundle
 
 # http://rvm.io/integration/bundler, depending on what's been done inside discourse
