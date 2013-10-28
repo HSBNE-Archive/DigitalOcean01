@@ -1,6 +1,2 @@
-- name: Collecting facts
-  hosts: vagrant
-  gather_facts: yes
-
 - include: playbooks/configure.yml tags=configure
 - include: playbooks/discourse.yml tags=discourse

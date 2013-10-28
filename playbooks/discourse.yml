@@ -1,0 +1,13 @@
+---
+
+- name: Install rbenv environment and needs as Discourse user
+  hosts: vagrant
+  user: $login_user
+  sudo: yes
+  sudo_user: discourse
+  tags: discourse
+  roles:
+    - rvm
+    #- rbenv
+    #- discourse
+    #- bluepill

@@ -1,0 +1,19 @@
+---
+postgres:
+  aptpackage:
+    - postgresql
+    - postgresql-contrib-9.1
+    - postgresql-client-common
+    - libxslt1.1
+    - postgresql-doc
+    - libossp-uuid16
+    - postgresql-contrib
+    - postgresql-common
+    - postgresql-client
+    - postgresql-9.1
+    - postgresql-doc-9.1
+    - ssl-cert
+    - libpq5
+    - postgresql-client-9.1
+    # specifically for ansible
+    - python-psycopg2

@@ -1,0 +1,29 @@
+---
+
+- name: git clone rbenv
+  git: repo=https://github.com/sstephenson/rbenv dest=/home/{{ discourse.user }}/.rbenv
+
+- name: git clone ruby-build
+  git: repo=https://github.com/sstephenson/ruby-build dest=/home/{{ discourse.user }}/.rbenv/plugins/ruby-build
+
+- name: git clone rbenv-gemset
+  git: repo=https://github.com/jf/rbenv-gemset dest=/home/{{ discourse.user }}/.rbenv/plugins/rbenv-gemset
+
+- name: update PATH in ~/.profile
+  lineinfile: dest=/home/{{ discourse.user }}/.profile line='export PATH="$HOME/.rbenv/bin:$PATH"' regexp=PATH.*rbenv
+
+- name: add rbenv-int to profile
+  lineinfile: dest=/home/{{ discourse.user }}/.profile line='eval "$(rbenv init -)"' regexp=eval.*rbenv
+
+- name: install default Ruby versions (long wait / compiling two Ruby versions) (needs better idempotency)
+  command: /home/{{ discourse.user }}/.rbenv/bin/rbenv install {{ item }} creates=/home/{{ discourse.user }}/.rbenv/versions/{{ item }}
+  with_items:
+    - ${ruby.versions}
+
+- name: set preferred version
+  template: src=version.j2 dest=/home/{{ discourse.user }}/.rbenv/version
+  notify: rbenv rehash
+
+- name: install bundler
+  command: /home/{{ discourse.user }}/.rbenv/shims/gem install bundle creates=/home/{{ discourse.user }}/.rbenv/versions/{{ ruby.global }}/bin/bundle
+  notify: rbenv rehash

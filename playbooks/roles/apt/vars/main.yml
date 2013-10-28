@@ -1,0 +1,49 @@
+---
+ubuntu:
+  base:
+    # git
+    - git
+    # rbenv + Rails
+    - libc6-dev
+    - libssl-dev
+    - libmysql++-dev
+    - libsqlite3-dev
+    - make 
+    - build-essential 
+    - libssl-dev
+    - libreadline6-dev 
+    - zlib1g-dev 
+    - libyaml-dev
+    # RVM-specific
+    - sqlite3
+    - autoconf
+    - libgdbm-dev
+    - libncurses5-dev
+    - bison
+    - libffi-dev
+    # install node-js for Rails
+    - nodejs
+    # for Vagrant installs
+    - curl
+    - libcurl4-openssl-dev
+    - bsdtar
+    - nfs-common
+    # extra command-line utils not installed by default
+    - htop
+    - sysstat
+    - iotop
+    - iptraf
+    - nethogs
+    - iftop
+    - traceroute
+    - ptop
+    # discourse prequisites not covered
+    - libtool
+    - libxslt1-dev # open bug (docs list w/o "1")
+    - libxml2-dev 
+    - libpq-dev 
+    - gawk 
+    - curl 
+    - pngcrush 
+    - imagemagick 
+    - python-software-properties # # TODO: own install for >= 12.10 software-properties-common

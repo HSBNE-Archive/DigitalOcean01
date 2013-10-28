@@ -1,7 +1,0 @@
----
-
-- name: Create discourse postgres user (needs to lock down attributes / best practices)
-  postgresql_user: user={{ discourse.user }} password={{ discourse.prod.dbpasswd }} role_attr_flags=SUPERUSER
-
-- name:
-  postgresql_db: name={{ discourse.prod.db }} encoding='UTF-8' template='template0' owner={{ discourse.user }}

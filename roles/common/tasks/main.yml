@@ -1,7 +1,0 @@
----
-
-- name: Create Discourse user
-  user: name={{ discourse.user }} comment="Discourse application" shell=/bin/bash
-
-- name: Create Discourse location
-  file: path=/var/www/discourse owner={{ discourse.user }} group={{ discourse.user }} mode=0755 state=directory

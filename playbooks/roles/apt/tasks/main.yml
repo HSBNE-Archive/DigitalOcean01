@@ -1,0 +1,6 @@
+---
+
+- name: Install all packages from vars
+  apt: pkg={{ item }} state=present update_cache=yes
+  with_items:
+    - ${ubuntu.base}

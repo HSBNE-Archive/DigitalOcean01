@@ -1,2 +1,4 @@
-[servers]
-vagrantprecise
+[vagrant]
+192.168.33.169
+[localhost]
+localhost

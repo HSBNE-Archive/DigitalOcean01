@@ -1,0 +1,8 @@
+---
+
+- name: Install iptables
+  apt: package=iptables state=present
+
+- name: Deploy iptables rule
+  template: src=iptables-save.j2 dest=/etc/iptables.rules
+  notify: Restore iptables

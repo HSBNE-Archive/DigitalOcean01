@@ -4,7 +4,12 @@ login_user: vagrant
 
 # It is highly recommended to change these to prevent information disclosure / guessable names
 #
-# version can be 'master' for bleeding edge, or 'latest-release' for most recent numbered release
+# version can be 'master' for bleeding edge (recommended, since it's beta code...
+# or 'latest-release' for most recent numbered release
+#
+# test.hostname - 'localhost' means from the vantage point of the server it's installed on
+#                 You won't want to change it until this has matured.
+
 
 discourse:
   user: discourse
@@ -21,8 +26,25 @@ discourse:
     id: 0
     hostname: localhost
 
-# mandrillapp.com is a dev recommendation (12k emails/month for free)
+users:
+  - name: discourse
+    comment: 'discourse user'
+    home: /home/discourse
+    uid: 1010
+    shell: /bin/bash
+    group: discourse
+    groups:
+    - discourse
+    - www-data
+    append: no
+
+
+######################### SMTP mail config #######################
+
+# mandrillapp.com is a developer recommendation (12k emails/month for free)
 # use API key for password (if necessary)
+# most email configs = email goes straight to peoples' spam folders
+# choose wisely
 
 smtp:
   fqdn: mandrillapp.com
@@ -30,96 +52,24 @@ smtp:
   user: username@domain.com
   passwd: api_key_or_password
 
+######################### rbenv #######################
 
-######################### END OF "STUFF YOU SHOULD CHANGE" SECTION #######################
+# 1.9.3 seems more stable, but someone might have different opinions
+# Changing the global version (what discourse uses) after initial install is not recommended
+# (unless you're a Rails pro)
 
 ruby:
   versions: 
-     - 1.9.3-p448
      - 2.0.0-p247
   global: 2.0.0-p247
+  gc_malloc_limit: 90000000
+  num_webs: 2
 
-rbenv_root: '.rbenv'
+######################### Digital Ocean #######################
 
-apt:
-  base:
-    # all from https://github.com/discourse/discourse/blob/master/docs/INSTALL-ubuntu.md
-    # openssh-server task
-    - openssh-server
-    - ssh-import-id
-    - libwrap0
-    - tcpd
-    - openssh-server
-    # postgresql-server task
-    - postgresql
-    - postgresql-contrib-9.1
-    - postgresql-client-common
-    - libxslt1.1
-    - postgresql-doc
-    - libossp-uuid16
-    - postgresql-contrib
-    - postgresql-common
-    - postgresql-client
-    - postgresql-9.1
-    - postgresql-doc-9.1
-    - ssl-cert
-    - libpq5
-    - postgresql-client-9.1
-    # specifically for ansible
-    - python-psycopg2
-    # mail-server task
-    - dovecot-imapd
-    - procmail
-    - dovecot-core
-    - postfix
-    - libpth20
-    - libtokyocabinet8
-    - libgpgme11
-    - mutt
-    - ssl-cert
-    - dovecot-pop3d
-    - bsd-mailx
-    # additional system packages
-    - build-essential
-    - libssl-dev
-    - libyaml-dev
-    - git
-    - libtool
-    # TODO: open bug, listed as libxslt-dev in docs
-    - libxslt1-dev 
-    - libxml2-dev 
-    - libpq-dev 
-    - gawk 
-    - curl 
-    - pngcrush 
-    - imagemagick 
-    # TODO: own install for >= 12.10 software-properties-common
-    - python-software-properties
-    # Redis
-    - redis-server
-    # nginx
-    - nginx
-    # rbenv + Rails
-    - libc6-dev
-    - libssl-dev
-    - libmysql++-dev
-    - libsqlite3-dev
-    - make 
-    - build-essential 
-    - libssl-dev
-    - libreadline6-dev 
-    - zlib1g-dev 
-    - libyaml-dev
-    # for Nokogiri / just about everything these days, you bastards
-    - libxml2-dev
-    - libxslt1-dev
-    # install horribly outdated + broken in-distro versions, just because
-    - ruby
-    - rake
-    # install node-js for Rails
-    - nodejs
-    # for Vagrant (should be broken out)
-    - curl
-    - libcurl4-openssl-dev
-    - bsdtar
-    - nfs-common
+digitalocean:
+  sshkeyname: username_for_key_in_digital_ocean_environment
+  sshkey: 'your_ssh_key_goes_between_these_single_quotes'
+  clientid: goes_here
+  apikey: goes_here
+  hostname: hostname.domainname.com
