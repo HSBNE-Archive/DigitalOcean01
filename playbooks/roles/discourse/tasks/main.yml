@@ -1,13 +1,14 @@
 ---
 
 - name: git clone discourse
-  git: repo=git://github.com/discourse/discourse.git dest={{ discourse.path }} version=${discourse.version}
+git: repo=git://github.com/discourse/discourse.git dest={{ discourse.path }} version=${discourse.version} update=latest-release
   register: git_cloned
 
 - name: install gems for discourse (bundler for idempotency - first run is only long process)
-  command: /home/${discourse.user}/.rvm/gems/{$ruby.global}/bin/bundle install --deployment --without test chdir={{ discourse.path }}
+  command: /home/${discourse.user}/.rvm/bin/rvm ${ruby.global} exec bundle install --deployment --without test chdir={{ discourse.path }}
 
 - name: install templates
+
   template: src={{ item.src }} dest={{ discourse.path }}/{{ item.dest }}
   with_items:
     - { src: 'database.yml.j2', dest: 'config/database.yml' }
@@ -16,10 +17,18 @@
     - { src: 'production.rb.j2', dest: 'config/environments/production.rb' }
 
 - name: create secret token if nonexistent (add file conditional execution)
-  command: RAILS_ENV=production /home/${discourse.user}/.rvm/gems/{$ruby.global}/bin/bundle exec rake secret chdir={{ discourse.path }} creates={{ discourse.path }}/.secret_token
+  shell: /home/${discourse.user}/.rvm/bin/rvm ${ruby.global} exec bundle exec rake secret > ${discourse.path}/.secret_token chdir={{ discourse.path }} creates={{ discourse.path }}/.secret_token
+  environment:
+    RAILS_ENV: production
 
 - name: initialize database from project dir (relies on rake for idempotency)
-  command: RUBY_GC_MALLOC_LIMIT={{ ruby.gc_malloc_limit }} RAILS_ENV=production /home/${discourse.user}/.rvm/gems/{$ruby.global}/bin/bundle exec rake db:migrate chdir={{ discourse.path }}
+  command: /home/${discourse.user}/.rvm/bin/rvm ${ruby.global} exec bundle exec rake db:migrate chdir={{ discourse.path }}
+  environment:
+    RAILS_ENV: production
+    RUBY_GC_MALLOC_LIMIT: ruby.gc_malloc_limit
 
 - name: precompile assets
-  command: RUBY_GC_MALLOC_LIMIT={{ ruby.gc_malloc_limit }} RAILS_ENV=production /home/${discourse.user}/.rvm/gems/{$ruby.global}/bin/bundle exec rake assets:precompile chdir={{ discourse.path }}
+  command: /home/${discourse.user}/.rvm/bin/rvm ${ruby.global} exec bundle exec rake assets:precompile chdir={{ discourse.path }}
+  environment:
+    RAILS_ENV: production
+    RUBY_GC_MALLOC_LIMIT: ruby.gc_malloc_limit
