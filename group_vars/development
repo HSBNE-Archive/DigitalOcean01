@@ -1,0 +1,15 @@
+discourse:
+  user: discourse
+  path: /var/www/discourse
+  version: latest-release
+  prod:
+    db: discourse_prod
+    dbpasswd: mysupersecreetpassword
+    id: 0
+    hostname: discourse.hsbne.dev
+  test:
+    db: discourse_test
+    dbpasswd: mysupersecreetpassword
+    id: 0
+    hostname: localhost
+
