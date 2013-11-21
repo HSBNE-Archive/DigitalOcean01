@@ -1,7 +1,7 @@
 ---
 
 - name: git clone discourse
-git: repo=git://github.com/discourse/discourse.git dest={{ discourse.path }} version=${discourse.version} update=latest-release
+  git: repo=git://github.com/discourse/discourse.git dest={{ discourse.path }} version=${discourse.version}
   register: git_cloned
 
 - name: install gems for discourse (bundler for idempotency - first run is only long process)
@@ -25,10 +25,10 @@ git: repo=git://github.com/discourse/discourse.git dest={{ discourse.path }} ver
   command: /home/${discourse.user}/.rvm/bin/rvm ${ruby.global} exec bundle exec rake db:migrate chdir={{ discourse.path }}
   environment:
     RAILS_ENV: production
-    RUBY_GC_MALLOC_LIMIT: ruby.gc_malloc_limit
+    RUBY_GC_MALLOC_LIMIT: "{{ ruby.gc_malloc_limit }}"
 
 - name: precompile assets
   command: /home/${discourse.user}/.rvm/bin/rvm ${ruby.global} exec bundle exec rake assets:precompile chdir={{ discourse.path }}
   environment:
     RAILS_ENV: production
-    RUBY_GC_MALLOC_LIMIT: ruby.gc_malloc_limit
+    RUBY_GC_MALLOC_LIMIT: "{{ ruby.gc_malloc_limit }}"
