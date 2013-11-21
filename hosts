@@ -1,4 +1,11 @@
 [vagrant]
-192.168.33.169
-[localhost]
-localhost
+discourse.hsbne.dev
+
+[digitalocean]
+do1.hsbne.org
+
+[development:children]
+vagrant
+
+[production:children]
+digitalocean
