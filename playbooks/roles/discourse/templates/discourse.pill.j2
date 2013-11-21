@@ -21,7 +21,7 @@ Bluepill.application("discourse", :base_dir => ENV["HOME"] + '/.bluepill') do |a
   # bundle exec spawns a process totally messing with the demonize option
   # so we suck the environment out and set it up first
   # routelastresort: in addition to that mess, changed this to support rbenv (over RVM)
-  bootup_bundle = [ "#{ENV['HOME']}/.rbenv/shims/bootup_bundle",
+  bootup_bundle = [ "#{ENV['HOME']}/.rvm/bin/rvm/bootup_bundle",
                     "/usr/local/rvm/bin/rvm/bootup_bundle",
                     `which bootup_bundle`.strip,
                   ].each do |location|

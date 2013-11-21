@@ -8,6 +8,6 @@
   tags: discourse
   roles:
     - rvm
-    - rbenv
+    #- rbenv
     - discourse
     - bluepill
