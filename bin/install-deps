@@ -1,0 +1,23 @@
+#!/bin/bash
+
+if [ "$(uname)" == "Darwin" ]; then
+  OS="Osx"
+elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+  OS="Lin"
+elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
+  OS="Win"
+fi
+
+case "$OS" in
+
+Osx)  echo "You must have Vagrant and Virtualbox installed."
+      echo "Installing Ansible and Vagrant Plugins."
+      brew install ansible
+      vagrant plugin install vagrant-hostsupdater
+      ;;
+
+Lin)  echo  "Sending SIGINT signal"
+      ;;
+Win)  echo  "Sending SIGQUIT signal"
+      ;;
+esac
