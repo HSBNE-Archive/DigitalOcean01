@@ -17,3 +17,4 @@ postgres:
     - postgresql-client-9.1
     # specifically for ansible
     - python-psycopg2
+    - libpq-dev

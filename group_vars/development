@@ -6,7 +6,7 @@ discourse:
     db: discourse_prod
     dbpasswd: mysupersecreetpassword
     id: 0
-    hostname: discourse.hsbne.dev
+    hostname: discourse.dev
   test:
     db: discourse_test
     dbpasswd: mysupersecreetpassword

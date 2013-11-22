@@ -1,8 +1,8 @@
 [vagrant]
-discourse.hsbne.dev
+discourse.dev
 
 [digitalocean]
-do1.hsbne.org
+do1.example.com
 
 [development:children]
 vagrant

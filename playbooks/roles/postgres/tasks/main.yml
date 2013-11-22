@@ -13,6 +13,7 @@
   notify: reload postgres
 
 - name: create discourse db
-  postgresql_db: name={{ discourse.prod.db }} encoding='UTF-8' template='template0' owner={{ discourse.user }}
+  postgresql_db: name={{ discourse.prod.db }} 
+    encoding='UTF-8' lc_collate="en_US.utf8" lc_ctype="en_US.utf8" template='template0' owner={{ discourse.user }}
   sudo_user: postgres
   notify: reload postgres
