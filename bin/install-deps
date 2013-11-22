@@ -14,6 +14,7 @@ Osx)  echo "You must have Vagrant and Virtualbox installed."
       echo "Installing Ansible and Vagrant Plugins."
       brew install ansible
       vagrant plugin install vagrant-hostsupdater
+      vagrant plugin install vagrant-vbguest
       ;;
 
 Lin)  echo  "Sending SIGINT signal"
