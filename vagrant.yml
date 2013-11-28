@@ -1,2 +1,7 @@
-- include: playbooks/configure.yml tags=configure
-- include: playbooks/discourse.yml tags=discourse
+- hosts: development
+  remote_user: vagrant
+  sudo: yes
+  roles:
+    - vagrant
+    - utilities
+  include: discourse.yml tags=discourse

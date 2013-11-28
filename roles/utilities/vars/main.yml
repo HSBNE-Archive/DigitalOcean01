@@ -1,0 +1,12 @@
+---
+ubuntu:
+  base:
+    # extra command-line utils not installed by default
+    - htop
+    - sysstat
+    - iotop
+    - iptraf
+    - nethogs
+    - iftop
+    - traceroute
+    - ptop

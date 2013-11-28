@@ -1,0 +1,15 @@
+---
+ubuntu:
+  base:
+    - build-essential
+    - libssl-dev
+    - libyaml-dev
+    - libtool
+    - libxslt1-dev
+    - libxml2-dev 
+    - libpq-dev 
+    - gawk 
+    - curl 
+    - pngcrush 
+    - imagemagick 
+    - python-software-properties # TODO: Ubuntu >= 12.10 needs software-properties-common. Detect this and change?

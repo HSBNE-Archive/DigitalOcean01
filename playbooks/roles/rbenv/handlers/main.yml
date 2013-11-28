@@ -1,2 +1,0 @@
-- name: rbenv rehash
-  command: /home/${discourse.user}/.rbenv/bin/rbenv rehash

@@ -1,6 +1,0 @@
----
-- name: Deploy to your cloud architecture of choice
-  hosts: localhost
-  user: $login_user
-  roles:
-    - digitalocean

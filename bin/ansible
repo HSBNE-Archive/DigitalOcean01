@@ -1,0 +1,11 @@
+#!/bin/bash
+# Run with:
+# ./ansible -K --limit production provision.yml
+
+SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
+BASEPATH=$SCRIPTPATH/../
+
+cd $BASEPATH
+
+/usr/bin/env ansible-playbook -i $BASEPATH/hosts "$@"
+

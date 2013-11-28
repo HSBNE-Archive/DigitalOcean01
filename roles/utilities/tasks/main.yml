@@ -1,0 +1,7 @@
+### Install Prerequisite packages
+
+- name: Install Common useful utilities
+  apt: pkg={{ item }} state=present update_cache=yes
+  with_items:
+    - ${ubuntu.base}
+

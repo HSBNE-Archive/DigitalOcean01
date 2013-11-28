@@ -1,0 +1,8 @@
+---
+
+- name: install postgres packages
+  apt: package={{ item }} state=present
+  with_items: ${postgres.aptpackage}
+
+- name: start postgres becuase of handler issues
+  service: name=postgresql state=started

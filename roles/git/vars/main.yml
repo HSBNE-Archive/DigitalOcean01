@@ -1,0 +1,7 @@
+---
+
+ubuntu:
+  base:
+    # git
+    - git
+

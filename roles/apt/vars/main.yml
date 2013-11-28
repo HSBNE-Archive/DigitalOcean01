@@ -1,0 +1,23 @@
+---
+ubuntu:
+  base:
+    # rbenv + Rails
+    - libc6-dev
+    - libssl-dev
+    - libmysql++-dev
+    - libsqlite3-dev
+    - make 
+    - build-essential 
+    - libssl-dev
+    - libreadline6-dev 
+    - zlib1g-dev 
+    - libyaml-dev
+    # RVM-specific
+    - sqlite3
+    - autoconf
+    - libgdbm-dev
+    - libncurses5-dev
+    - bison
+    - libffi-dev
+    # install node-js for Rails
+    - nodejs
