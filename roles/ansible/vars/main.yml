@@ -1,7 +1,5 @@
 ---
-
 ubuntu:
   base:
-    # git
-    - git
+    - python-pycurl
 

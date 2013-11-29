@@ -1,8 +1,0 @@
----
-
-dependencies:
-  - { role: git }
-
-- name: install RVM
-  shell: \curl -L https://get.rvm.io | bash -s stable --auto-dotfiles creates=~/.rvm
-

@@ -1,8 +1,9 @@
 ---
 
 - name: Install discourse forum software
+  hosts: all
   sudo: yes
-  sudo_user: discourse
-  tags: discourse
+  tags: 
+    - discourse
   roles:
     - discourse

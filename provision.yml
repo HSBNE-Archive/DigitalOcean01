@@ -1,5 +1,5 @@
 - hosts: production
-  remote_user: root
+  remote_user: "{{ user }}"
   sudo: yes
   roles:
     - utilities

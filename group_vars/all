@@ -1,25 +1,15 @@
-
-# The name you use to ssh to the host
-login_user: vagrant
-
-# It is highly recommended to change these to prevent information disclosure / guessable names
-#
-# version can be 'master' for bleeding edge (recommended, since it's beta code...
-# or 'latest-release' for most recent numbered release
-#
-# test.hostname - 'localhost' means from the vantage point of the server it's installed on
-#                 You won't want to change it until this has matured.
-
+user: root
+hostname: example.com
 
 discourse:
   user: discourse
   path: /var/www/discourse
-  version: master
+  version: latest-release
   prod:
     db: discourse_prod
     dbpasswd: mysupersecreetpassword
     id: 0
-    hostname: www.example.com
+    hostname: discourse.example.com
   test:
     db: discourse_test
     dbpasswd: mysupersecreetpassword
@@ -52,11 +42,7 @@ smtp:
   user: username@domain.com
   passwd: api_key_or_password
 
-######################### rbenv #######################
-
-# 1.9.3 seems more stable, but someone might have different opinions
-# Changing the global version (what discourse uses) after initial install is not recommended
-# (unless you're a Rails pro)
+######################### RVM #######################
 
 ruby:
   versions: 
@@ -64,12 +50,3 @@ ruby:
   global: 2.0.0-p247
   gc_malloc_limit: 90000000
   num_webs: 2
-
-######################### Digital Ocean #######################
-
-digitalocean:
-  sshkeyname: username_for_key_in_digital_ocean_environment
-  sshkey: 'your_ssh_key_goes_between_these_single_quotes'
-  clientid: goes_here
-  apikey: goes_here
-  hostname: hostname.domainname.com

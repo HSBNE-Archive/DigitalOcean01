@@ -1,0 +1,9 @@
+---
+
+dependencies:
+  - { role: nginx }
+  - { role: postgres }
+  - { role: redis }
+  - { role: git }
+
+

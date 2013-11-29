@@ -1,7 +1,8 @@
 - hosts: development
-  remote_user: vagrant
+  remote_user: "{{ user }}"
   sudo: yes
   roles:
+    - ansible
     - vagrant
     - utilities
-  include: discourse.yml tags=discourse
+- include: discourse.yml tags=discourse
