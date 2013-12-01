@@ -20,7 +20,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     ansible.playbook = "vagrant.yml"
     ansible.inventory_path = "./hosts"
     ansible.limit = "development"
-    ansible.verbose = 'vvvv'
+    #ansible.verbose = 'vvvv'
+    #ansible.start_at_task = 'Copy custom image assets'
   end
   
 end

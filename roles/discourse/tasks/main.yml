@@ -69,11 +69,15 @@
     - { src: 'database.yml.j2', dest: 'config/database.yml' }
     - { src: 'redis.yml.j2', dest: 'config/redis.yml' }
     - { src: 'discourse.pill.j2', dest: 'config/discourse.pill' }
+    #- { src: 'site_settings.yml.j2', dest: 'config/site_settings.yml' }
     - { src: 'production.rb.j2', dest: 'config/environments/production.rb' }
 
 - name: Install Discourse Nginx.conf
   template: src='nginx.conf.j2' dest='/etc/nginx/conf.d/discourse.conf'
   notify: restart nginx
+
+- name: Copy custom image assets
+  copy: src=assets/images/ dest={{ discourse.path}}/app/assets/images/ owner={{ discourse.user }} group=discourse mode=644
 
 ### Specific steps for setting up the Discourse software
 
@@ -89,6 +93,18 @@
   environment:
     RAILS_ENV: production
     RUBY_GC_MALLOC_LIMIT: "{{ ruby.gc_malloc_limit }}"
+
+- name: Upload Configuration Script
+  template: src="initialize.rb.j2" dest=/home/{{ discourse.user }}/initialize.rb group=discourse owner={{ discourse.user }} mode=774
+
+- name: Execute Configuration Script
+  shell: /home/{{discourse.user}}/.rvm/bin/rvm {{ruby.global}} exec bundle exec rails runner /home/{{ discourse.user }}/initialize.rb chdir={{ discourse.path }}
+  sudo_user: "{{ discourse.user }}"
+  environment:
+    RAILS_ENV: production
+
+- name: Cleanup Configuration Script
+  file: path=/home/{{ discourse.user }}/initialize.rb state=absent
 
 - name: precompile assets
   sudo_user: "{{ discourse.user }}"

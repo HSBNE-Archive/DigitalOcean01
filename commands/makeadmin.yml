@@ -1,0 +1,16 @@
+- hosts: all
+  remote_user: "{{ user }}"
+  sudo: yes
+  vars_prompt:
+    email: "Email of user to make admin?"
+
+  tasks:
+    - name: Upload Script
+      template: src="../assets/scripts/makeadmin.rb.j2" dest=/home/{{ discourse.user }}/makeadmin.rb group=discourse owner={{ discourse.user }} mode=774
+    - name: Execute Script
+      shell: /home/{{discourse.user}}/.rvm/bin/rvm {{ruby.global}} exec bundle exec rails runner /home/{{ discourse.user }}/makeadmin.rb chdir={{ discourse.path }}
+      sudo_user: "{{ discourse.user }}"
+      environment:
+        RAILS_ENV: production
+    - name: Cleanup
+      file: path=/home/{{ discourse.user }}/makeadmin.rb state=absent

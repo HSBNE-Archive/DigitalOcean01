@@ -1,0 +1,4 @@
+me = User.find_by_username_or_email('{{ email }}')
+me.activate #use this in case you haven't configured your mail server and therefore can't receive the activation mail.
+me.admin = true
+me.save
