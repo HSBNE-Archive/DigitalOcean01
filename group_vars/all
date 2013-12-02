@@ -1,5 +1,5 @@
 user: root
-hostname: example.com
+hostname: unknown.hsbne.org
 
 discourse:
   user: discourse
@@ -7,12 +7,12 @@ discourse:
   version: latest-release
   prod:
     db: discourse_prod
-    dbpasswd: mysupersecreetpassword
+    dbpasswd: "{{ lookup('password', inventory_dir + '/credentials/' + inventory_hostname + '/postgrespassword_prod length=20') }}"
     id: 0
-    hostname: discourse.example.com
+    hostname: forum.hsbne.org
   test:
     db: discourse_test
-    dbpasswd: mysupersecreetpassword
+    dbpasswd: "{{ lookup('password', inventory_dir + '/credentials/' + inventory_hostname + '/postgrespassword_test length=20') }}"
     id: 0
     hostname: localhost
 
@@ -39,8 +39,8 @@ users:
 smtp:
   fqdn: mandrillapp.com
   port: 587
-  user: username@domain.com
-  passwd: api_key_or_password
+  user: "{{ lookup('file', inventory_dir + '/credentials/' + inventory_hostname + '/mandrilluser') }}"
+  passwd: "{{ lookup('file', inventory_dir + '/credentials/' + inventory_hostname + '/mandrillpass') }}"
 
 ######################### RVM #######################
 

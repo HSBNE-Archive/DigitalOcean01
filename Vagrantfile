@@ -9,7 +9,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box_url = "http://files.vagrantup.com/precise64.box"
   config.vm.network :private_network, ip: "192.168.33.169"
   config.vm.hostname = "discourse.dev"
-  config.hostsupdater.aliases = []
+  config.hostsupdater.aliases = ['do1.hsbne.dev']
 
   config.vm.provider :virtualbox do |vb|
     vb.customize ["modifyvm", :id, "--memory", "2048"]

@@ -1,4 +1,5 @@
 user: vagrant
+hostname: do1.hsbne.dev
 
 discourse:
   prod:

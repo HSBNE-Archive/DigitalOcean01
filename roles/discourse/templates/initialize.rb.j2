@@ -1,21 +1,17 @@
-#User.seed do |u|
-  #u.id = -1
-  #u.name = "Joshua Hogendorn"
-  #u.username = "devians"
-  #u.username_lower = "devians"
-  #u.email = "jhogendorn@gmail.com"
-  #u.password = SecureRandom.hex
-  ## TODO localize this, its going to require a series of hacks
-  #u.bio_raw = ""
-  #u.active = true
-  #u.admin = true
-  #u.moderator = true
-  #u.email_direct = false
-  #u.approved = true
-  #u.email_private_messages = false
-#end
-
-#require 'site_setting_extension'
+User.find_or_create_by(email: 'jhogendorn@gmail.com') do |u|
+  u.name = "Joshua Hogendorn"
+  u.username = "devians"
+  u.username_lower = "devians"
+  u.email = "jhogendorn@gmail.com"
+  u.password = SecureRandom.hex
+  u.bio_raw = ""
+  u.active = true
+  u.admin = true
+  u.moderator = true
+  u.email_direct = false
+  u.approved = true
+  u.email_private_messages = false
+end
 
 SiteSetting.site_description = 'Discourse for Hackerspace Brisbane'
 SiteSetting.contact_email = 'infrastructure@hsbne.org'
@@ -32,6 +28,7 @@ SiteSetting.company_domain = 'hsbne.org'
 
 SiteSetting.enable_facebook_logins = false
 SiteSetting.enable_twitter_logins = false
+SiteSetting.enable_yahoo_logins = false
 SiteSetting.enable_cas_logins = false
 SiteSetting.enable_github_logins = false
 SiteSetting.enable_persona_logins = false

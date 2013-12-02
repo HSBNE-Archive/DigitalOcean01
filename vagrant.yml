@@ -5,4 +5,4 @@
     - ansible
     - vagrant
     - utilities
-- include: discourse.yml tags=discourse
+    - discourse

@@ -1,6 +1,9 @@
 - hosts: production
   remote_user: "{{ user }}"
   sudo: yes
+  vars_files:
+    - private_vars/all.yml
   roles:
+    - ansible
     - utilities
-- include: discourse.yml tags=discourse
+    - discourse

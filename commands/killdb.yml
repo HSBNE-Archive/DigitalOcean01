@@ -1,0 +1,15 @@
+- hosts: all
+  remote_user: "{{ user }}"
+  sudo: yes
+
+  tasks:
+    - name: Kill Discourse
+      sudo: yes
+      shell: pkill -9 -f discourse
+      ignore_errors: True
+    - name: Reset Database
+      shell: /home/{{discourse.user}}/.rvm/bin/rvm {{ruby.global}} exec bundle exec rake db:reset chdir={{ discourse.path }}
+      sudo_user: "{{ discourse.user }}"
+      environment:
+        RAILS_ENV: production
+
