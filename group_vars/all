@@ -37,7 +37,7 @@ users:
 # choose wisely
 
 smtp:
-  fqdn: mandrillapp.com
+  fqdn: smtp.mandrillapp.com
   port: 587
   user: "{{ lookup('file', inventory_dir + '/credentials/' + inventory_hostname + '/mandrilluser') }}"
   passwd: "{{ lookup('file', inventory_dir + '/credentials/' + inventory_hostname + '/mandrillpass') }}"
