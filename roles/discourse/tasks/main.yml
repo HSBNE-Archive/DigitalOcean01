@@ -65,6 +65,8 @@
 - name: Install Discourse templates
   sudo_user: "{{ discourse.user }}"
   template: src={{ item.src }} dest={{ discourse.path }}/{{ item.dest }}
+  tags:
+    - deploy
   with_items:
     - { src: 'database.yml.j2', dest: 'config/database.yml' }
     - { src: 'redis.yml.j2', dest: 'config/redis.yml' }
@@ -77,6 +79,8 @@
   notify: restart nginx
 
 - name: Copy custom image assets
+  tags: 
+    - deploy
   copy: src=assets/images/ dest={{ discourse.path}}/app/assets/images/ owner={{ discourse.user }} group=discourse mode=644
 
 ### Specific steps for setting up the Discourse software
@@ -95,18 +99,26 @@
     RUBY_GC_MALLOC_LIMIT: "{{ ruby.gc_malloc_limit }}"
 
 - name: Upload Configuration Script
+  tags: 
+    - deploy
   template: src="initialize.rb.j2" dest=/home/{{ discourse.user }}/initialize.rb group=discourse owner={{ discourse.user }} mode=774
 
 - name: Execute Configuration Script
+  tags: 
+    - deploy
   shell: /home/{{discourse.user}}/.rvm/bin/rvm {{ruby.global}} exec bundle exec rails runner /home/{{ discourse.user }}/initialize.rb chdir={{ discourse.path }}
   sudo_user: "{{ discourse.user }}"
   environment:
     RAILS_ENV: production
 
 - name: Cleanup Configuration Script
+  tags: 
+    - deploy
   file: path=/home/{{ discourse.user }}/initialize.rb state=absent
 
 - name: precompile assets
+  tags: 
+    - deploy
   sudo_user: "{{ discourse.user }}"
   command: /home/{{discourse.user}}/.rvm/bin/rvm {{ruby.global}} exec bundle exec rake assets:precompile chdir={{ discourse.path }}
   environment:
@@ -142,6 +154,8 @@
         job="RUBY_GC_MALLOC_LIMIT={{ruby.gc_malloc_limit}} RAILS_ROOT={{discourse.path}} RAILS_ENV=production NUM_WEBS=2 /home/{{discourse.user}}/.rvm/bin/bootup_bluepill --no-privileged -c /home/{{discourse.user}}/.bluepill load {{discourse.path}}/config/discourse.pill"
 
 - name: Start up Discourse
+  tags: 
+    - deploy
   sudo_user: "{{ discourse.user }}"
   command: /home/{{discourse.user}}/.rvm/bin/rvm {{ruby.global}} exec bluepill --no-privileged -c /home/{{discourse.user}}/.bluepill load {{discourse.path}}/config/discourse.pill chdir={{ discourse.path }}
   environment:
