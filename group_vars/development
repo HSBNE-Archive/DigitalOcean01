@@ -3,7 +3,9 @@ hostname: do1.hsbne.dev
 
 discourse:
   prod:
-    hostname: discourse.dev
+    hostname: discourse.hsbne.dev
   test:
     hostname: localhost
 
+gollum:
+  hostname: wiki.hsbne.dev

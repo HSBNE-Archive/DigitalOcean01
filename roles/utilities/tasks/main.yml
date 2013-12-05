@@ -3,5 +3,13 @@
 - name: Install Common useful utilities
   apt: pkg={{ item }} state=present update_cache=yes
   with_items:
-    - ${ubuntu.base}
+    # extra command-line utils not installed by default
+    - htop
+    - sysstat
+    - iotop
+    - iptraf
+    - nethogs
+    - iftop
+    - traceroute
+    - ptop
 

@@ -1,8 +1,0 @@
----
-ubuntu:
-  base:
-    - curl
-    - libcurl4-openssl-dev
-    - bsdtar
-    - nfs-common
-

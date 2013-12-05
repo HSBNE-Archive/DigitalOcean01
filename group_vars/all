@@ -16,6 +16,14 @@ discourse:
     id: 0
     hostname: localhost
 
+gollum:
+  user: gollum
+  path: /var/www/gollum
+  hostname: wiki.hsbne.org
+  version: master
+  env:
+    GOLLUM_DATA_PATH: /var/data/gollum.git
+
 users:
   - name: discourse
     comment: 'discourse user'
@@ -25,6 +33,16 @@ users:
     group: discourse
     groups:
     - discourse
+    - www-data
+    append: no
+  - name: gollum
+    comment: 'gollum user'
+    home: /home/gollum
+    uid: 1011
+    shell: /bin/bash
+    group: gollum
+    groups:
+    - gollum
     - www-data
     append: no
 

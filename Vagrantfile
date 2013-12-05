@@ -8,8 +8,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "precise64"
   config.vm.box_url = "http://files.vagrantup.com/precise64.box"
   config.vm.network :private_network, ip: "192.168.33.169"
-  config.vm.hostname = "discourse.dev"
-  config.hostsupdater.aliases = ['do1.hsbne.dev']
+  config.vm.hostname = "do1.hsbne.dev"
+  config.hostsupdater.aliases = ['discourse.hsbne.dev', 'wiki.hsbne.dev']
 
   config.vm.provider :virtualbox do |vb|
     vb.customize ["modifyvm", :id, "--memory", "2048"]
@@ -21,7 +21,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     ansible.inventory_path = "./hosts"
     ansible.limit = "development"
     #ansible.verbose = 'vvvv'
-    #ansible.start_at_task = 'Copy custom image assets'
+    #ansible.start_at_task = 'Git Clone Gollum'
   end
   
 end

@@ -1,5 +1,0 @@
----
-ubuntu:
-  base:
-    - python-pycurl
-

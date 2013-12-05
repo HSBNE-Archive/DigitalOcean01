@@ -4,16 +4,18 @@
 - name: Install prerequisite packages for Discourse
   apt: pkg={{ item }} state=present update_cache=yes
   with_items:
-    - "{{ ubuntu.base }}"
-
-### Create User Env
-
-- name: Create Discourse group
-  group: name=discourse state=present
-
-- name: Create Discourse user
-  user: name={{ item.name }} uid={{ item.uid }} home={{ item.home }} shell={{ item.shell }} comment="{{ item.comment }}" group={{ item.group }} groups={{ ",".join(item.groups) }} append={{ item.append }}
-  with_items: $users
+    - build-essential
+    - libssl-dev
+    - libyaml-dev
+    - libtool
+    - libxslt1-dev
+    - libxml2-dev
+    - libpq-dev
+    - gawk
+    - curl
+    - pngcrush
+    - imagemagick
+    - python-software-properties # TODO: Ubuntu >= 12.10 needs software-properties-common. Detect this and change?
 
 ### Install the Discourse source
 
@@ -24,6 +26,12 @@
   sudo_user: "{{ discourse.user }}"
   git: repo=git://github.com/discourse/discourse.git dest={{ discourse.path }} version={{discourse.version}}
   register: git_cloned
+
+- include: ../../rvm/tasks/bundler.yml
+  vars:
+    rvm_user: "{{ discourse.user }}"
+    ruby_version: "{{ ruby.global }}"
+    bundler_path: "{{ discourse.path }}"
 
 ### Set up the Discourse database
 
@@ -38,28 +46,6 @@
   sudo_user: postgres
   notify: reload postgres
 
-### Set up Ruby/RVM for Discourse
-
-- name: install RVM
-  sudo_user: "{{ discourse.user }}"
-  shell: \curl -L https://get.rvm.io | bash -s stable --auto-dotfiles creates=/home/{{ discourse.user }}/.rvm chdir=/home/{{ discourse.user }}
-
-- name: Templated ~/.gemrc
-  sudo_user: "{{ discourse.user }}"
-  template: src=gemrc.j2 dest=/home/{{ discourse.user }}/.gemrc owner={{ discourse.user }} group={{ discourse.user }}
-
-- name: install Ruby 2.0 without package installs that might require sudo
-  sudo_user: "{{ discourse.user }}"
-  command: /home/{{discourse.user}}/.rvm/bin/rvm install --autolibs=2 --default {{ruby.global}} creates=/home/{{discourse.user}}/.rvm/rubies/ruby-{{ruby.global}}
-
-- name: install bundler
-  sudo_user: "{{ discourse.user }}"
-  command: /home/{{discourse.user}}/.rvm/bin/gem install bundler creates=/home/{{discourse.user}}/.rvm/gems/ruby-{{ruby.global}}/bin/bundle
-
-- name: Install gems for Discourse (bundler for idempotency - first run is only long process)
-  sudo_user: "{{ discourse.user }}"
-  command: /home/{{discourse.user}}/.rvm/bin/rvm {{ruby.global}} exec bundle install --deployment --without test chdir={{ discourse.path }}
-
 ### Configure Discourse, Gems, and Nginx
 
 - name: Install Discourse templates
@@ -71,7 +57,6 @@
     - { src: 'database.yml.j2', dest: 'config/database.yml' }
     - { src: 'redis.yml.j2', dest: 'config/redis.yml' }
     - { src: 'discourse.pill.j2', dest: 'config/discourse.pill' }
-    #- { src: 'site_settings.yml.j2', dest: 'config/site_settings.yml' }
     - { src: 'production.rb.j2', dest: 'config/environments/production.rb' }
 
 - name: Install Discourse Nginx.conf

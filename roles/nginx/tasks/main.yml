@@ -7,9 +7,18 @@
   apt_repository: repo='deb http://nginx.org/packages/ubuntu/ precise nginx' state=present
   notify: update apt-cache
 
-- name: Install nginx
-  apt: package=nginx state=present
+#- name: Halt Existing Nginx
+  #service: name=nginx state=stopped
+
+#- name: Remove Old Nginx
+  #apt: package=nginx state=absent
+
+- name: Install Nginx Full
+  apt: package=nginx-full state=present
   notify: restart nginx
+
+- name: Install Nginx.conf Customisations
+  template: src='nginx.conf.j2' dest='/etc/nginx/conf.d/nginx.conf'
 
 - name: Start nginx
   service: name=nginx state=started

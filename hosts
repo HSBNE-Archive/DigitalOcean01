@@ -1,5 +1,7 @@
 [vagrant]
-discourse.dev
+#do1.hsbne.dev
+#because of the hostsupdater bug, I'm reverting back to using ip's.
+192.168.33.169
 
 [digitalocean]
 do1.hsbne.org

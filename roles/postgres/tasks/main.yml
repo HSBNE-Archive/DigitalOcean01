@@ -2,7 +2,24 @@
 
 - name: install postgres packages
   apt: package={{ item }} state=present
-  with_items: ${postgres.aptpackage}
+  with_items:
+    - postgresql
+    - postgresql-contrib-9.1
+    - postgresql-client-common
+    - libxslt1.1
+    - postgresql-doc
+    - libossp-uuid16
+    - postgresql-contrib
+    - postgresql-common
+    - postgresql-client
+    - postgresql-9.1
+    - postgresql-doc-9.1
+    - ssl-cert
+    - libpq5
+    - postgresql-client-9.1
+    # specifically for ansible
+    - python-psycopg2
+    - libpq-dev
 
 - name: start postgres becuase of handler issues
   service: name=postgresql state=started
