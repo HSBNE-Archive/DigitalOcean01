@@ -52,7 +52,7 @@
   sudo_user: "{{ discourse.user }}"
   template: src={{ item.src }} dest={{ discourse.path }}/{{ item.dest }}
   tags:
-    - deploy
+    - deploy_discourse
   with_items:
     - { src: 'database.yml.j2', dest: 'config/database.yml' }
     - { src: 'redis.yml.j2', dest: 'config/redis.yml' }
@@ -65,7 +65,7 @@
 
 - name: Copy custom image assets
   tags: 
-    - deploy
+    - deploy_discourse
   copy: src=assets/images/ dest={{ discourse.path}}/app/assets/images/ owner={{ discourse.user }} group=discourse mode=644
 
 ### Specific steps for setting up the Discourse software
@@ -85,12 +85,12 @@
 
 - name: Upload Configuration Script
   tags: 
-    - deploy
+    - deploy_discourse
   template: src="initialize.rb.j2" dest=/home/{{ discourse.user }}/initialize.rb group=discourse owner={{ discourse.user }} mode=774
 
 - name: Execute Configuration Script
   tags: 
-    - deploy
+    - deploy_discourse
   shell: /home/{{discourse.user}}/.rvm/bin/rvm {{ruby.global}} exec bundle exec rails runner /home/{{ discourse.user }}/initialize.rb chdir={{ discourse.path }}
   sudo_user: "{{ discourse.user }}"
   environment:
@@ -98,12 +98,12 @@
 
 - name: Cleanup Configuration Script
   tags: 
-    - deploy
+    - deploy_discourse
   file: path=/home/{{ discourse.user }}/initialize.rb state=absent
 
 - name: precompile assets
   tags: 
-    - deploy
+    - deploy_discourse
   sudo_user: "{{ discourse.user }}"
   command: /home/{{discourse.user}}/.rvm/bin/rvm {{ruby.global}} exec bundle exec rake assets:precompile chdir={{ discourse.path }}
   environment:
@@ -140,7 +140,7 @@
 
 - name: Start up Discourse
   tags: 
-    - deploy
+    - deploy_discourse
   sudo_user: "{{ discourse.user }}"
   command: /home/{{discourse.user}}/.rvm/bin/rvm {{ruby.global}} exec bluepill --no-privileged -c /home/{{discourse.user}}/.bluepill load {{discourse.path}}/config/discourse.pill chdir={{ discourse.path }}
   environment:

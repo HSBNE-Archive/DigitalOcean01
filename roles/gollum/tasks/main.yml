@@ -8,17 +8,23 @@
 ### Install the Gollum source
 
 - name: Create Gollum location
+  tags:
+    - deploy_gollum
   file: path={{ gollum.path }} owner={{ gollum.user }} group={{ gollum.user }} mode=0755 state=directory
 
 - name: Create Gollum data location
   file: path={{ gollum.env.GOLLUM_DATA_PATH }} owner={{ gollum.user }} group={{ gollum.user }} mode=0755 state=directory
 
 - name: Git Clone Gollum
+  tags:
+    - deploy_gollum
   sudo_user: "{{ gollum.user }}"
   git: repo=git://github.com/jhogendorn/Gollum-Rack.git dest={{ gollum.path }} version={{gollum.version}}
   register: git_cloned
 
 - include: ../../rvm/tasks/bundler.yml
+  tags:
+    - deploy_gollum
   vars:
     rvm_user: "{{ gollum.user }}"
     ruby_version: "{{ ruby.global }}"
