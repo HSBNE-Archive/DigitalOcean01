@@ -26,7 +26,7 @@
   tags:
     - update_discourse
   sudo_user: "{{ discourse.user }}"
-  git: repo=git://github.com/discourse/discourse.git dest={{ discourse.path }} version={{discourse.version}}
+  git: repo=git://github.com/discourse/discourse.git dest={{ discourse.path }} version={{discourse.version}} force=yes update=yes
   register: git_cloned
 
 - include: ../../rvm/tasks/bundler.yml
@@ -45,7 +45,7 @@
   notify: reload postgres
 
 - name: Create Discourse db
-  postgresql_db: name={{ discourse.prod.db }} 
+  postgresql_db: name={{ discourse.prod.db }}
     encoding='UTF-8' lc_collate="en_US.utf8" lc_ctype="en_US.utf8" template='template0' owner={{ discourse.user }}
   sudo_user: postgres
   notify: reload postgres
@@ -67,18 +67,13 @@
   template: src='nginx.conf.j2' dest='/etc/nginx/conf.d/discourse.conf'
   notify: restart nginx
 
-- name: Copy custom image assets
-  tags: 
-    - deploy_discourse
-  copy: src=assets/images/ dest={{ discourse.path}}/app/assets/images/ owner={{ discourse.user }} group=discourse mode=644
-
 ### Specific steps for setting up the Discourse software
 
-- name: create secret token if nonexistent (add file conditional execution)
-  sudo_user: "{{ discourse.user }}"
-  shell: /home/{{discourse.user}}/.rvm/bin/rvm {{ruby.global}} exec bundle exec rake secret > {{discourse.path}}/.secret_token chdir={{ discourse.path }} creates={{ discourse.path }}/.secret_token
-  environment:
-    RAILS_ENV: production
+#- name: create secret token if nonexistent (add file conditional execution)
+  #sudo_user: "{{ discourse.user }}"
+  #shell: /home/{{discourse.user}}/.rvm/bin/rvm {{ruby.global}} exec bundle exec rake secret > {{discourse.path}}/.secret_token chdir={{ discourse.path }} creates={{ discourse.path }}/.secret_token
+  #environment:
+    #RAILS_ENV: production
 
 - name: initialize database from project dir (relies on rake for idempotency)
   tags:
@@ -90,12 +85,12 @@
     RUBY_GC_MALLOC_LIMIT: "{{ ruby.gc_malloc_limit }}"
 
 - name: Upload Configuration Script
-  tags: 
+  tags:
     - deploy_discourse
   template: src="initialize.rb.j2" dest=/home/{{ discourse.user }}/initialize.rb group=discourse owner={{ discourse.user }} mode=774
 
 - name: Execute Configuration Script
-  tags: 
+  tags:
     - deploy_discourse
   shell: /home/{{discourse.user}}/.rvm/bin/rvm {{ruby.global}} exec bundle exec rails runner /home/{{ discourse.user }}/initialize.rb chdir={{ discourse.path }}
   sudo_user: "{{ discourse.user }}"
@@ -103,9 +98,14 @@
     RAILS_ENV: production
 
 - name: Cleanup Configuration Script
-  tags: 
+  tags:
     - deploy_discourse
   file: path=/home/{{ discourse.user }}/initialize.rb state=absent
+
+- name: Copy custom image assets
+  tags:
+    - deploy_discourse
+  copy: src=assets/images/ dest={{ discourse.path}}/app/assets/images/ owner={{ discourse.user }} group=discourse mode=644
 
 - name: precompile assets
   tags:
@@ -116,6 +116,12 @@
   environment:
     RAILS_ENV: production
     RUBY_GC_MALLOC_LIMIT: "{{ ruby.gc_malloc_limit }}"
+
+- name: Git clean
+  tags:
+    - deploy_discourse
+  sudo_user: "{{ discourse.user }}"
+  command: git clean -f chdir={{ discourse.path }}
 
 ### Install and Configure the BluePill Gem
 
@@ -141,9 +147,38 @@
 
 - name: Installing reboot cron for Discourse
   sudo_user: "{{ discourse.user }}"
-  cron: name="discourse" 
-        special_time=reboot 
+  cron: name="discourse"
+        special_time=reboot
         job="RUBY_GC_MALLOC_LIMIT={{ruby.gc_malloc_limit}} RAILS_ROOT={{discourse.path}} RAILS_ENV=production NUM_WEBS=2 /home/{{discourse.user}}/.rvm/bin/bootup_bluepill --no-privileged -c /home/{{discourse.user}}/.bluepill load {{discourse.path}}/config/discourse.pill"
+
+- name: restart nginx
+  tags:
+    - update_discourse
+  service: name=nginx state=restarted
+
+- name: Stop Thins
+  tags:
+    - update_discourse
+    - deploy_discourse
+  sudo_user: "{{ discourse.user }}"
+  command: /home/{{discourse.user}}/.rvm/bin/rvm {{ruby.global}} exec bluepill --no-privileged -c /home/{{discourse.user}}/.bluepill stop thins
+  environment:
+    RAILS_ENV: production
+    RAILS_ROOT: "{{ discourse.path }}"
+    NUM_WEBS: 2
+    RUBY_GC_MALLOC_LIMIT: "{{ ruby.gc_malloc_limit }}"
+
+- name: Stop Sidekiq
+  tags:
+    - update_discourse
+    - deploy_discourse
+  sudo_user: "{{ discourse.user }}"
+  command: /home/{{discourse.user}}/.rvm/bin/rvm {{ruby.global}} exec bluepill --no-privileged -c /home/{{discourse.user}}/.bluepill stop sidekiq-worker
+  environment:
+    RAILS_ENV: production
+    RAILS_ROOT: "{{ discourse.path }}"
+    NUM_WEBS: 2
+    RUBY_GC_MALLOC_LIMIT: "{{ ruby.gc_malloc_limit }}"
 
 - name: Start up Discourse
   tags:
