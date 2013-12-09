@@ -22,6 +22,11 @@
   git: repo=git://github.com/jhogendorn/Gollum-Rack.git dest={{ gollum.path }} version={{gollum.version}}
   register: git_cloned
 
+- name: Clear Gems
+  tags:
+    - rebuild_gollum
+  file: path={{ gollum.path }}/vendor state=absent
+
 - include: ../../rvm/tasks/bundler.yml
   tags:
     - deploy_gollum
@@ -30,10 +35,22 @@
     ruby_version: "{{ ruby.global }}"
     bundler_path: "{{ gollum.path }}"
 
+- name: Copy favicon
+  tags: 
+    - deploy_gollum
+  copy: src=assets/images/favicon.ico dest={{ gollum.path}}/public owner={{ gollum.user }} group=gollum mode=644
+
 - name: Git Init Gollum Data
   sudo_user: "{{ gollum.user }}"
   command: git init --bare chdir={{ gollum.env.GOLLUM_DATA_PATH }} creates={{ gollum.env.GOLLUM_DATA_PATH }}/HEAD
 
 - name: Install Gollum Nginx.conf
+  tags:
+    - deploy_gollum
   template: src='nginx.conf.j2' dest='/etc/nginx/conf.d/gollum.conf'
   notify: restart nginx
+
+- name: Restart Gollum
+  file: path={{ gollum.path }}/tmp/restart.txt state=touch
+  tags:
+    - restart_gollum
