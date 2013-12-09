@@ -23,11 +23,15 @@
   file: path={{ discourse.path }} owner={{ discourse.user }} group={{ discourse.user }} mode=0755 state=directory
 
 - name: Git Clone Discourse
+  tags:
+    - update_discourse
   sudo_user: "{{ discourse.user }}"
   git: repo=git://github.com/discourse/discourse.git dest={{ discourse.path }} version={{discourse.version}}
   register: git_cloned
 
 - include: ../../rvm/tasks/bundler.yml
+  tags:
+    - update_discourse
   vars:
     rvm_user: "{{ discourse.user }}"
     ruby_version: "{{ ruby.global }}"
@@ -77,6 +81,8 @@
     RAILS_ENV: production
 
 - name: initialize database from project dir (relies on rake for idempotency)
+  tags:
+    - update_discourse
   sudo_user: "{{ discourse.user }}"
   command: /home/{{discourse.user}}/.rvm/bin/rvm {{ruby.global}} exec bundle exec rake db:migrate chdir={{ discourse.path }}
   environment:
@@ -102,7 +108,8 @@
   file: path=/home/{{ discourse.user }}/initialize.rb state=absent
 
 - name: precompile assets
-  tags: 
+  tags:
+    - update_discourse
     - deploy_discourse
   sudo_user: "{{ discourse.user }}"
   command: /home/{{discourse.user}}/.rvm/bin/rvm {{ruby.global}} exec bundle exec rake assets:precompile chdir={{ discourse.path }}
@@ -139,7 +146,8 @@
         job="RUBY_GC_MALLOC_LIMIT={{ruby.gc_malloc_limit}} RAILS_ROOT={{discourse.path}} RAILS_ENV=production NUM_WEBS=2 /home/{{discourse.user}}/.rvm/bin/bootup_bluepill --no-privileged -c /home/{{discourse.user}}/.bluepill load {{discourse.path}}/config/discourse.pill"
 
 - name: Start up Discourse
-  tags: 
+  tags:
+    - update_discourse
     - deploy_discourse
   sudo_user: "{{ discourse.user }}"
   command: /home/{{discourse.user}}/.rvm/bin/rvm {{ruby.global}} exec bluepill --no-privileged -c /home/{{discourse.user}}/.bluepill load {{discourse.path}}/config/discourse.pill chdir={{ discourse.path }}
