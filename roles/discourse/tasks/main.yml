@@ -56,10 +56,12 @@
   sudo_user: "{{ discourse.user }}"
   template: src={{ item.src }} dest={{ discourse.path }}/{{ item.dest }}
   tags:
+    - update_discourse
     - deploy_discourse
   with_items:
     - { src: 'database.yml.j2', dest: 'config/database.yml' }
     - { src: 'redis.yml.j2', dest: 'config/redis.yml' }
+    - { src: 'discourse.conf.j2', dest: 'config/discourse.conf' }
     - { src: 'discourse.pill.j2', dest: 'config/discourse.pill' }
     - { src: 'production.rb.j2', dest: 'config/environments/production.rb' }
 
