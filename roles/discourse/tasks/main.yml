@@ -129,7 +129,7 @@
 
 - name: Install bluepill gem (gem for idempotency?)
   sudo_user: "{{ discourse.user }}"
-  command: /home/{{discourse.user}}/.rvm/bin/gem install bluepill creates=/home/{{discourse.user}}/.rvm/gems/ruby-{{ruby.global}}/bin/bluepill
+  command: /home/{{discourse.user}}/.rvm/bin/rvm {{ ruby.global }} exec gem install bluepill creates=/home/{{discourse.user}}/.rvm/gems/ruby-{{ruby.global}}/bin/bluepill
   tags: bluepill
 
 - name: Rvm wrappers for booting bluepill
@@ -162,6 +162,7 @@
   tags:
     - update_discourse
     - deploy_discourse
+  ignore_errors: true
   sudo_user: "{{ discourse.user }}"
   command: /home/{{discourse.user}}/.rvm/bin/rvm {{ruby.global}} exec bluepill --no-privileged -c /home/{{discourse.user}}/.bluepill stop thins
   environment:
@@ -174,6 +175,7 @@
   tags:
     - update_discourse
     - deploy_discourse
+  ignore_errors: true
   sudo_user: "{{ discourse.user }}"
   command: /home/{{discourse.user}}/.rvm/bin/rvm {{ruby.global}} exec bluepill --no-privileged -c /home/{{discourse.user}}/.bluepill stop sidekiq-worker
   environment:
@@ -186,6 +188,7 @@
   tags:
     - update_discourse
     - deploy_discourse
+  ignore_errors: true
   sudo_user: "{{ discourse.user }}"
   command: /home/{{discourse.user}}/.rvm/bin/rvm {{ruby.global}} exec bluepill --no-privileged -c /home/{{discourse.user}}/.bluepill load {{discourse.path}}/config/discourse.pill chdir={{ discourse.path }}
   environment:
