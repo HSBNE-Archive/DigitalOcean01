@@ -1,0 +1,129 @@
+# vim: set foldmethod=marker
+#!/bin/bash
+
+# Script Setup {{{
+
+set -e          # if one fails, we halt
+set -o nounset  # undefined variables bad juju
+
+# }}}
+
+# Discover Environment {{{
+SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
+BASEPATH=$( cd $SCRIPTPATH/../; pwd -P )
+
+export SCRIPTPATH
+export BASEPATH
+
+# }}}
+
+# Ensure clean exits {{{
+
+finish () {
+  rm $BASEPATH/.vault > /dev/null 2>&1  # do not leave password files around
+}
+export -f finish
+
+trap finish INT TERM EXIT
+
+# }}}
+
+# Define print library {{{
+
+info () {
+  printf "  [ \033[00;34m..\033[0m ] $1\n"
+}
+export -f info
+
+user () {
+  printf "\r  [ \033[0;33m??\033[0m ] $1 "
+}
+export -f user
+
+success () {
+  printf "\r\033[2K  [ \033[00;32mOK\033[0m ] $1\n"
+}
+export -f success
+
+fail () {
+  printf "\r\033[2K  [\033[0;31mFAIL\033[0m] $1\n"
+}
+export -f fail
+
+status () {
+  # for use with return codes
+  # status $? "My Message"
+  case $1 in
+    0)
+      success "$2"
+      ;;
+    *)
+      fail "$2"
+      ;;
+  esac
+}
+export -f status
+
+# }}}
+
+# Define script functions {{{
+
+prompt_password() {
+  local input
+
+  while [ ! -n "$input" ]; do # ask for a password until given one
+    user "$2"
+    stty_orig=`stty -g`       # save original terminal setting.
+    stty -echo                # turn-off echoing.
+    read -e input             # get password from user
+    printf "\n"               # ensure we start writing on a newline
+    stty $stty_orig           # restore terminal setting.
+  done
+
+  eval $1=\$input
+}
+export -f prompt_password
+
+operate () {
+  local type=$2
+  local file=$1
+  ansible-vault $1 --vault-password-file $BASEPATH/.vault $2 > /dev/null 2>&1
+  status $? "${type}ed $file"
+}
+export -f operate
+
+# }}}
+
+# Script execution {{{
+
+# Obtain passphrase {{{
+prompt_password password "Enter vault password:"
+prompt_password password_verify "Verify vault password:"
+
+if [ "$password" != "$password_verify" ]; then
+  fail "Passwords did not match"
+  exit 64   # http://stackoverflow.com/questions/1101957/are-there-any-standard-exit-status-codes-in-linux
+            # define EX_USAGE        64      /* command line usage error */
+            # closest standard return I could find
+fi
+
+# ansible-vault does not allow passing in the password via stdin, so
+# we write it to a file thats only readable by our current user
+
+touch $BASEPATH/.vault
+chmod 600 $BASEPATH/.vault
+
+echo "$password" >> $BASEPATH/.vault
+
+# }}}
+
+# name our arguments for readability
+
+type=$1
+glob=$2
+
+find $glob -type f | xargs -P1 -n1 -I{} bash -c "operate {} '$type'"
+
+info "${type}ion completed"
+
+# }}}
