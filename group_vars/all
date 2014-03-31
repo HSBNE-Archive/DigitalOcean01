@@ -4,7 +4,8 @@ hostname: unknown.hsbne.org
 discourse:
   user: discourse
   path: /var/www/discourse
-  version: latest-release
+  version: master
+  admin_emails: 'jhogendorn@gmail.com'
   prod:
     db: discourse_prod
     dbpasswd: "{{ lookup('password', inventory_dir + '/credentials/' + inventory_hostname + '/postgrespassword_prod length=20') }}"
