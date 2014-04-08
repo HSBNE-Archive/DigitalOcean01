@@ -156,12 +156,14 @@
 - name: restart nginx
   tags:
     - update_discourse
+    - restart_discourse
   service: name=nginx state=restarted
 
 - name: Stop Thins
   tags:
     - update_discourse
     - deploy_discourse
+    - restart_discourse
   ignore_errors: true
   sudo_user: "{{ discourse.user }}"
   command: /home/{{discourse.user}}/.rvm/bin/rvm {{ruby.global}} exec bluepill --no-privileged -c /home/{{discourse.user}}/.bluepill stop thins
@@ -175,6 +177,7 @@
   tags:
     - update_discourse
     - deploy_discourse
+    - restart_discourse
   ignore_errors: true
   sudo_user: "{{ discourse.user }}"
   command: /home/{{discourse.user}}/.rvm/bin/rvm {{ruby.global}} exec bluepill --no-privileged -c /home/{{discourse.user}}/.bluepill stop sidekiq-worker
@@ -188,6 +191,7 @@
   tags:
     - update_discourse
     - deploy_discourse
+    - restart_discourse
   ignore_errors: true
   sudo_user: "{{ discourse.user }}"
   command: /home/{{discourse.user}}/.rvm/bin/rvm {{ruby.global}} exec bluepill --no-privileged -c /home/{{discourse.user}}/.bluepill load {{discourse.path}}/config/discourse.pill chdir={{ discourse.path }}
