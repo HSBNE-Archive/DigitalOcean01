@@ -67,6 +67,9 @@
 
 - name: Install Discourse Nginx.conf
   template: src='nginx.conf.j2' dest='/etc/nginx/conf.d/discourse.conf'
+  tags:
+    - update_discourse
+    - deploy_discourse
   notify: restart nginx
 
 ### Specific steps for setting up the Discourse software
