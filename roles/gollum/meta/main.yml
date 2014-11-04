@@ -2,8 +2,7 @@
 
 dependencies:
   - { role: users }
-  - { role: nginx }
-  - { role: passenger }
+  - { role: nginx-passenger }
   - { role: git }
   - { role: rvm, rvm_user: "{{ gollum.user }}", ruby_version: "{{ ruby.global }}" }
 

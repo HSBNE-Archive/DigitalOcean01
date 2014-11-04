@@ -1,10 +1,19 @@
-- hosts: development
+- hosts: vagrant
   remote_user: "{{ user }}"
   sudo: yes
   roles:
     - ansible
     - vagrant
     - utilities
-    - discourse
-    - gollum
 
+- hosts: discourse:&development
+  remote_user: "{{ user }}"
+  sudo: yes
+  roles:
+    - discourse
+
+- hosts: gollum:&development
+  remote_user: "{{ user }}"
+  sudo: yes
+  roles:
+    - gollum

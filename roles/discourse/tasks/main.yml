@@ -1,3 +1,66 @@
 ---
 
+- name: Create Discourse location
+  file: path={{ discourse.path }} owner={{ discourse.user }} group={{ discourse.user }} mode=0755 state=directory
 
+- name: Git Clone Discourse
+  tags:
+    - update
+    - discourse
+  sudo_user: "{{ discourse.user }}"
+  git: repo=https://github.com/discourse/discourse_docker.git dest={{ discourse.path }} force=yes update=yes
+  register: git_cloned
+
+- name: Create .ssh
+  file: path={{ ansible_env.HOME }}/.ssh owner={{ user }} group={{ user }} mode=0755 state=directory
+  sudo: yes
+
+- name: Install Keys
+  sudo: yes
+  template: src={{ item.src }} dest={{ item.dest }}
+  tags:
+  with_items:
+    - { src: 'key_private.j2', dest: '{{ ansible_env.HOME }}/.ssh/id_rsa' }
+    - { src: 'key_public.j2', dest: '{{ ansible_env.HOME }}/.ssh/id_rsa.pub' }
+
+- name: Install Discourse templates
+  sudo_user: "{{ discourse.user }}"
+  template: src={{ item.src }} dest={{ item.dest }}
+  tags:
+  with_items:
+    - { src: 'standalone.yml.j2', dest: '{{ discourse.path }}/containers/app.yml' }
+
+- name: Install Discourse Nginx.conf
+  template: src='nginx.conf.j2' dest='/etc/nginx/conf.d/discourse.conf'
+  tags:
+  notify: restart nginx
+
+- name: Start Docker
+  sudo: true
+  service: name=docker state=running
+
+- name: Add Key for User
+  user: name={{ user }} generate_ssh_key=yes
+
+- name: Bootstrap App
+  tags:
+  shell: ./launcher bootstrap app chdir={{ discourse.path }} creates={{ discourse.path }}/cids/app.cid
+  #sudo_user: "{{ discourse.user }}"
+  sudo: true
+
+- name: Rebuild App
+  tags:
+    - update
+    - discourse
+  shell: ./launcher rebuild app chdir={{ discourse.path }} creates={{ discourse.path }}/cids/app.cid
+  #sudo_user: "{{ discourse.user }}"
+  sudo: true
+
+- name: Start App
+  tags:
+    - update
+    - install
+    - discourse
+  shell: ./launcher restart app chdir={{ discourse.path }}
+  #sudo_user: "{{ discourse.user }}"
+  sudo: true

@@ -19,7 +19,7 @@
   tags:
     - deploy_gollum
   sudo_user: "{{ gollum.user }}"
-  git: repo=git://github.com/HSBNE/Wiki-GollumRack.git dest={{ gollum.path }} version={{gollum.version}}
+  git: repo=https://github.com/HSBNE/Wiki-GollumRack.git dest={{ gollum.path }} version={{gollum.version}}
   register: git_cloned
 
 - name: Clear Gems

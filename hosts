@@ -1,13 +1,28 @@
+[discourse]
+dev.forum.hsbne.org
+forum.hsbne.org
+
+[gollum]
+dev.wiki.hsbne.org
+wiki.hsbne.org
+
+
 [vagrant]
-#do1.hsbne.dev
-#because of the hostsupdater bug, I'm reverting back to using ip's.
-192.168.33.169
+dev.do1.hsbne.org
+
+[vagrant-alias]
+dev.wiki.hsbne.org
+dev.forum.hsbne.org
 
 [digitalocean]
 do1.hsbne.org
+wiki.hsbne.org
+forum.hsbne.org
+
 
 [development:children]
 vagrant
+vagrant-alias
 
 [production:children]
 digitalocean

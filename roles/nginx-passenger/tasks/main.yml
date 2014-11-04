@@ -1,0 +1,36 @@
+---
+
+- name: Ensure the PGP key is installed
+  apt_key: id=AC40B2F7 state=present url="http://keyserver.ubuntu.com/pks/lookup?op=get&fingerprint=on&search=0x561F9B9CAC40B2F7"
+
+- name: Ensure https support for apt is installed
+  apt: pkg=apt-transport-https state=present
+
+- name: Ensure the passenger apt repository is added
+  apt_repository: state=present repo='deb https://oss-binaries.phusionpassenger.com/apt/passenger trusty main'
+
+- name: Check if nginx is installed
+  shell: nginx -V
+  register: nginx_status
+
+- name: Remove old version of Nginx
+  apt: pkg=nginx-full state=absent update_cache=yes
+  when: nginx_status.stdout.find('modules/passenger') == -1
+
+- name: Ensure packages are installed
+  apt: pkg={{ item }} state=present update_cache=yes
+  with_items:
+    - apt-transport-https
+    - nginx-full
+    - passenger
+
+  # We do this to avoid mucking around attempting to edit the main nginx.conf
+- name: Install Passenger Nginx.conf
+  template: src='nginx.conf.j2' dest='/etc/nginx/conf.d/passenger.conf'
+  notify: restart nginx
+
+- name: Delete existing default.conf (and back it up)
+  file: path=/etc/nginx/conf.d/default.conf state=absent backup=yes
+
+- name: Ensure nginx is running
+  service: name=nginx state=started

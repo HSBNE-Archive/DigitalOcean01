@@ -4,8 +4,16 @@ hostname: unknown.hsbne.org
 discourse:
   user: discourse
   path: /var/www/discourse
-  version: latest-release
+  version: tests-passed
   admin_emails: 'jhogendorn@gmail.com'
+  key:
+    private: "{{ lookup('file', inventory_dir + '/credentials/' + inventory_hostname + '/discourse.pkcs8') }}"
+    public: "{{ lookup('file', inventory_dir + '/credentials/' + inventory_hostname + '/discourse.pub') }}"
+  smtp:
+    fqdn: smtp.mandrillapp.com
+    port: 587
+    user: "{{ lookup('file', inventory_dir + '/credentials/' + inventory_hostname + '/mandrilluser') }}"
+    passwd: "{{ lookup('file', inventory_dir + '/credentials/' + inventory_hostname + '/mandrillpass') }}"
   prod:
     db: discourse_prod
     dbpasswd: "{{ lookup('password', inventory_dir + '/credentials/' + inventory_hostname + '/postgrespassword_prod length=20') }}"
@@ -48,20 +56,6 @@ users:
     - gollum
     - www-data
     append: no
-
-
-######################### SMTP mail config #######################
-
-# mandrillapp.com is a developer recommendation (12k emails/month for free)
-# use API key for password (if necessary)
-# most email configs = email goes straight to peoples' spam folders
-# choose wisely
-
-smtp:
-  fqdn: smtp.mandrillapp.com
-  port: 587
-  user: "{{ lookup('file', inventory_dir + '/credentials/' + inventory_hostname + '/mandrilluser') }}"
-  passwd: "{{ lookup('file', inventory_dir + '/credentials/' + inventory_hostname + '/mandrillpass') }}"
 
 ######################### RVM #######################
 

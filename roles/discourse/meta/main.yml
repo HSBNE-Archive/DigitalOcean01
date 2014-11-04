@@ -3,10 +3,7 @@
 dependencies:
   - { role: users }
   - { role: nginx }
-  - { role: postgres }
-  - { role: redis }
   - { role: git }
-  - { role: rvm, rvm_user: "{{ discourse.user }}", ruby_version: "{{ ruby.global }}" }
   - { role: docker }
 
 

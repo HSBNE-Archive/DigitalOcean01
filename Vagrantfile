@@ -5,22 +5,27 @@
 VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box = "precise64"
-  config.vm.box_url = "http://files.vagrantup.com/precise64.box"
-  config.vm.network :private_network, ip: "192.168.33.169"
-  config.vm.hostname = "do1.hsbne.dev"
-  config.hostsupdater.aliases = ['discourse.hsbne.dev', 'wiki.hsbne.dev']
+  config.vm.box = "puppetlabs/ubuntu-14.04-64-nocm"
+  config.vm.hostname = "dev.do1.hsbne.org"
+  config.hostsupdater.aliases = ['dev.forum.hsbne.org', 'dev.wiki.hsbne.org']
+  config.vm.network :private_network, ip: "192.168.50.169"
+  #config.vm.network :private_network, ip: "192.168.33.169"
 
   config.vm.provider :virtualbox do |vb|
     vb.customize ["modifyvm", :id, "--memory", "2048"]
     vb.customize ["modifyvm", :id, "--cpus", "2"] 
   end
 
+  config.vm.provider :vmware_fusion do |v|
+    v.vmx["memsize"] = "2048"
+    #v.vmx["numvcpus"] = "2"
+  end
+
   config.vm.provision "ansible" do |ansible|
     ansible.playbook = "vagrant.yml"
     ansible.inventory_path = "./hosts"
-    ansible.limit = "development"
-    #ansible.verbose = 'vvvv'
+    ansible.limit = ""
+    ansible.verbose = 'vvvv'
     #ansible.start_at_task = 'Git Clone Gollum'
   end
   

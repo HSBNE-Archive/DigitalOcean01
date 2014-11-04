@@ -4,7 +4,7 @@
   apt_key: url=http://nginx.org/keys/nginx_signing.key state=present
 
 - name: Add nginx.org repo
-  apt_repository: repo='deb http://nginx.org/packages/ubuntu/ precise nginx' state=present
+  apt_repository: repo='deb http://nginx.org/packages/ubuntu/ trusty nginx' state=present
   notify: update apt-cache
 
 #- name: Halt Existing Nginx
