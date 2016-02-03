@@ -2,8 +2,8 @@
   remote_user: "{{ user }}"
   sudo: yes
   roles:
-    - ansible
-    - vagrant
+    #- ansible
+    #- vagrant
     - utilities
 
 - hosts: discourse:&development
