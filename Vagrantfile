@@ -1,32 +1,63 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
-VAGRANTFILE_API_VERSION = "2"
+Vagrant.configure('2') do |config|
 
-Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box = "puppetlabs/ubuntu-14.04-64-nocm"
-  config.vm.hostname = "dev.do1.hsbne.org"
-  config.hostsupdater.aliases = ['dev.forum.hsbne.org', 'dev.wiki.hsbne.org']
-  config.vm.network :private_network, ip: "192.168.50.169"
-  #config.vm.network :private_network, ip: "192.168.33.169"
-
-  config.vm.provider :virtualbox do |vb|
-    vb.customize ["modifyvm", :id, "--memory", "2048"]
-    vb.customize ["modifyvm", :id, "--cpus", "2"] 
+  required_plugins = %w( vagrant-hostmanager vagrant-pristine vagrant-triggers )
+  required_plugins.each do |plugin|
+    system "vagrant plugin install #{plugin}" unless Vagrant.has_plugin? plugin
   end
 
-  config.vm.provider :vmware_fusion do |v|
-    v.vmx["memsize"] = "2048"
-    #v.vmx["numvcpus"] = "2"
+  if Vagrant.has_plugin?("vagrant-hostmanager") then
+    config.hostmanager.enabled = true
+    config.hostmanager.manage_host = true
+    config.hostmanager.ignore_private_ip = false
+    config.hostmanager.include_offline = true
   end
 
-  config.vm.provision "ansible" do |ansible|
-    ansible.playbook = "vagrant.yml"
-    ansible.inventory_path = "./hosts"
-    ansible.limit = ""
-    ansible.verbose = 'vvvv'
-    #ansible.start_at_task = 'Git Clone Gollum'
+  config.ssh.forward_agent = true
+
+  config.vm.define "dev.do1.hsbne.org" do |web|
+    web.vm.box = "precise64"
+    web.vm.network :private_network, ip: "192.168.3.3"
+    web.vm.hostname = "dev.do1.hsbne.org"
+    web.hostmanager.aliases = %w(dev.wiki.hsbne.org dev.forum.hsbne.org)
+
+    web.vm.provider :virtualbox do |v|
+      v.customize ["modifyvm", :id, "--memory", "2048"]
+      v.customize ["modifyvm", :id, "--cpus", "2"]
+      v.name = "do1"
+    end
+
+    web.vm.provider :vmware_fusion do |v|
+      v.vmx["memsize"] = "2048"
+      v.vmx["numvcpus"] = "2"
+    end
+
+    if Vagrant.has_plugin?("vagrant-triggers") and
+      not Vagrant::Util::Platform.windows?
+
+      web.trigger.after :up do
+        run "bin/vagrant-exportsshconfig"
+      end
+      web.trigger.after :reload do
+        run "bin/vagrant-exportsshconfig"
+      end
+      web.trigger.after :pristine do
+        run "bin/vagrant-exportsshconfig"
+      end
+
+    end
+
   end
-  
+
+  if not Vagrant::Util::Platform.windows?
+    config.vm.provision "ansible" do |ansible|
+      ansible.playbook = "vagrant.yml"
+      ansible.inventory_path = "./hosts"
+      ansible.limit = ""
+      ansible.verbose = 'vvvv'
+      #ansible.start_at_task = 'Git Clone Gollum'
+    end
+  end
 end
